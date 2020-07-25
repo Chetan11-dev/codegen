@@ -1,8 +1,6 @@
-import { Emmiter } from './emmiter'
-import { NL, between, braces } from '../../utils/utils'
-import { isListNotEmpty, isNotEmptyString } from '../../utils/tsUtils'
+import { between, braces } from '../../utils/utils'
+import { isNotEmptyString } from '../../utils/tsUtils'
 
-import indentString from 'indent-string'
 export interface Spec {
 
 
@@ -18,57 +16,10 @@ export interface SpecVisitor<E> {
     visitMethod(spec: Method, e: E): E
 
     visitClass(spec: Class, e: E): E
-}
-
-export class CodeGenerator implements SpecVisitor<Emmiter>  {
-    visitClass(spec: Class, e: Emmiter): Emmiter {
-        return e
-    }
-
-    visitMethod(spec: Method, e: Emmiter): Emmiter {
-        var params = ""
-        const unp = this.visitParameter(spec.unnamedParams)
-
-        const np = this.visitParameter(spec.namedParams)
 
 
-        // check if we have both named and unnamed  if yes do it 
-        // handle case for one and one 
-        if (isListNotEmpty(spec.unnamedParams) && isListNotEmpty(spec.namedParams)) {
-            params = `${unp},{${np}}`
-        } else if (isListNotEmpty(spec.unnamedParams)) {
-            params = `${unp}`
-        } else if (isListNotEmpty(spec.namedParams)) {
-            params = `{${np}}`
-        } else {
-            params = ''
-        }
+    visitConstructor(spec: Constructor, e: E): E
 
-        const indentedCode = indentString(spec.code.code, e.indent)
-        // console.log({ params, np ,unp })
-        const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}`
-        e.emit(s)
-        return e
-    }
-
-    visitParameter(ps: Parameter[]) {
-        const ns = ps.map(p => `${p.required ? "@required " : ""}${p.type} ${p.name}`)
-        return between(ns)
-
-        // if (named) {
-        //     ns.map(n=> {
-        //         if 
-        //         return ''
-        //     })
-        // }
-        // return named ? braces(between(paa)) : between(ns)
-    }
-
-    visitField(spec: Field, e: Emmiter): Emmiter {
-        const s = `${spec.modifier} ${spec.type} ${spec.name};`
-        e.emit(s)
-        return e
-    }
 }
 
 export class Field implements Spec {
@@ -114,14 +65,21 @@ export class Method implements Spec {
     }
 }
 
+export class Constructor implements Spec {
+    constructor(public className: string, public unnamedParams: Parameter[], public namedParams: Parameter[]) { }
+    accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
+        return visitor.visitConstructor(this, emitter)
+    }
+}
+
 export class Parameter {
 
     /**
     @param isThis -  This is only valid on constructors;
     **/
 
-    constructor(public name: string, public type: string, public isNamed = false,
-        public isThis: boolean = false, public required: boolean = false) { }
+    constructor(public name: string, public type: string, public isNamed: boolean,
+        public isThis: boolean, public required: boolean) { }
 
 }
 
@@ -139,4 +97,3 @@ export class Parameter {
 //     isThis: boolean
 //     required: boolean
 // }
-

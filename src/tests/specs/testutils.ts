@@ -1,19 +1,23 @@
-import { Field, Spec, CodeGenerator } from '../../core/codegen/Base'
+import { Field, Spec } from '../../core/codegen/Base'
+import { CodeGenerator } from "../../core/codegen/CodeGenerator"
 import { Emmiter } from '../../core/codegen/emmiter'
-export function equalsDart(p: Spec, content: string) {
-    const [codeString, e] = dartCode(p)
+export function equalsDart(p: Spec, content: string, log = false) {
 
-    expect(codeString).toBe(content)
+
+    const [codeString, e] = dartCode(p)
+    if (log) {
+        logCode(p)
+    } else
+        expect(codeString).toBe(content)
     return e as Emmiter
 }
 
 export function dartCode(p: Spec) {
     const e = new Emmiter()
-
     return [((p.accept(new CodeGenerator(), e)).content), e]
 }
 
-export function logCode(p: Spec) {
+function logCode(p: Spec) {
     logString(dartCode(p)[0] as string)
 }
 

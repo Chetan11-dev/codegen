@@ -1,4 +1,5 @@
 import { between, line, NL } from '../../utils/utils'
+import indentString from 'indent-string'
 
 export class Emmiter {
 
@@ -23,52 +24,64 @@ export class Emmiter {
         // this.content = this.content + params
     }
 
-
-    // emitAtTop(params: string) {
-    //     this.content = params + '\n' + this.content
-    // }
-
-    // surround(content = "", start = "{", end = "}") {
-    //     this.emit(start)
-
-    //     this.emit(end)
-    // }
-
-    // indent(s: string) {
-    //     var rs = (s.split('\n'))
-    //     const r = rs.pop()
-
-    //     rs = rs.map(str => { return this.defaultindent + str + "\n" })
-
-    //     rs.push(r as string)
-
-    //     return between(rs, '')
-    // }
-
     reset() {
         this.ls = []
     }
 
-    // indentAll() {
-    //     this.content = (this.indent(this.content))
-    // }
 
     emitLine() {
         this.add(line())
     }
 
-    emitWithIndent(content: string) {
-        throw new Error('Method not implemented.')
-        // const e = this.createNewEmmiter()
-        // f(e)
-        // this.add(this.indent(e.content))
-    }
     // emit with a new line  
     emit(s: string, shouldAddNewLine = true) {
-        this.add(s + (shouldAddNewLine ? NL : ""))
+        this.add(this.makeStr(s, shouldAddNewLine))
+    }
+
+    private makeStr(s: string, shouldAddNewLine: boolean): string {
+        return s + (shouldAddNewLine ? NL : "")
     }
 
     emitNoLine(s: string) {
         this.emit(s, false)
     }
+
+    surround(start = "{", end = "}") {
+        this.emitAtTop(start)
+        this.emit(end)
+    }
+
+    indentStr(s: string) {
+        return indentString(s, this.indent)
+    }
+
+    indentAll() {
+        this.ls = this.ls.map(l => this.indentStr(l))
+    }
+
+    emitAtTop(s: string, shouldAddNewLine = true) {
+        this.ls = [this.makeStr(s, shouldAddNewLine), ...this.ls]
+    }
+
+    private createNewEmmiter() {
+        return new Emmiter()
+    }
+
+    emitWithIndent(f: (e: Emmiter) => void) {
+        const e = this.createNewEmmiter()
+        f(e)
+        e.indentAll()
+        this.add((e.content))
+    }
+
+}
+
+function char_count(str: string, letter: string) {
+    var letter_Count = 0
+    for (var position = 0; position < str.length; position++) {
+        if (str.charAt(position) == letter) {
+            letter_Count += 1
+        }
+    }
+    return letter_Count
 }

@@ -34,7 +34,7 @@ const mex = 'dynamic haveFruit(String a, String b,{String c, String d}){\n' +
     '   a;\n' +
     '   b;\n' +
     '   c;\n' +
-    '}\n'
+    '}\n\n'
 
 const co = new Constructor("Fruit",
     unnamedparams,
@@ -43,27 +43,56 @@ const co = new Constructor("Fruit",
 const coex = 'Fruit(this.a, this.b,{this.c, this.d});\n'
 
 
-// test('should emit correct field', () => {
-//     equalsDart(f, fex)
+test('should emit correct field', () => {
+    equalsDart(f, fex)
 
-// })
+})
 
-// test('should emit correct Method', () => {
-//     equalsDart(m, mex,)
-// })
+test('should emit correct Method', () => {
+    equalsDart(m, mex,)
+})
 
-// test('should emit correct Constructor', () => {
-//     equalsDart(co, coex,)
-// })
+test('should emit correct Constructor', () => {
+    equalsDart(co, coex,)
+})
 
-// test('Code test', () => {
-//     expect(c.code).toBe(cex)
-// })
+test('Code test', () => {
+    expect(c.code).toBe(cex)
+})
+
+const cl = new Class("Fruit", co, [m, m, m])
+const clex = 'class Fruit {\n' +
+    '\n' +
+    '   final String c;\n' +
+    '   final String d;\n' +
+    '   final String a;\n' +
+    '   final String b;\n' +
+    '\n' +
+    '   Fruit(this.a, this.b,{this.c, this.d});\n' +
+    '\n' +
+    '   dynamic haveFruit(String a, String b,{String c, String d}){\n' +
+    '      a;\n' +
+    '      b;\n' +
+    '      c;\n' +
+    '   }\n' +
+    '\n' +
+    '   dynamic haveFruit(String a, String b,{String c, String d}){\n' +
+    '      a;\n' +
+    '      b;\n' +
+    '      c;\n' +
+    '   }\n' +
+    '\n' +
+    '   dynamic haveFruit(String a, String b,{String c, String d}){\n' +
+    '      a;\n' +
+    '      b;\n' +
+    '      c;\n' +
+    '   }\n' +
+    '\n' +
+    '}\n'
 
 test('should emit correct Class Simple', () => {
 
-    const cl = new Class("Fruit", co, [m])
-    const clex = 'class Fruit{\n}\n'
-    logCode(cl, false)
-    // equalsDart(cl, clex, true)
+
+    // logCode(cl,)
+    equalsDart(cl, clex)
 })

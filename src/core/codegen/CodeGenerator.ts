@@ -15,13 +15,22 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
         return e
     }
     visitClass(spec: Class, e: Emmiter): Emmiter {
-        const s = `class ${spec.name}{`
+        const s = `class ${spec.name} {`
         e.emit(s)
 
-        const feilds = spec.cons.namedParams.concat(spec.cons.unnamedParams)
-        feilds.forEach(f => this.visitField(f, e))
-        this.visitConstructor(spec.cons, e)
-        spec.methods.forEach(m => this.visitMethod(m, e))
+        e.emitWithIndent((e) => {
+
+            const feilds = spec.cons.namedParams.concat(spec.cons.unnamedParams)
+
+            e.emitLine()
+            feilds.forEach(f => this.visitField(f, e))
+            e.emitLine()
+
+            this.visitConstructor(spec.cons, e)
+            e.emitLine()
+
+            spec.methods.forEach(m => this.visitMethod(m, e))
+        })
 
         e.emit("}")
         return e
@@ -33,7 +42,9 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
         const indentedCode = indentString(spec.code.code, e.indent)
         // console.log({ params, np ,unp })
         const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}`
+
         e.emit(s)
+        e.emitLine()
         return e
     }
 

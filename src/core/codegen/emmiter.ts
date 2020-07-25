@@ -1,4 +1,4 @@
-import { between, line, NEW_LINE } from './utils'
+import { between, line, NL } from '../../utils/utils'
 
 export class Emmiter {
 
@@ -7,6 +7,7 @@ export class Emmiter {
     private ls: string[] = []
 
     public get content(): string {
+        // console.log(between(this.ls, ""))
         return between(this.ls, "")
     }
 
@@ -61,7 +62,7 @@ export class Emmiter {
     }
     // emit with a new line  
     emit(s: string, shouldAddNewLine = true) {
-        this.add(s + (shouldAddNewLine ? NEW_LINE : ""))
+        this.add(s + (shouldAddNewLine ? NL : ""))
     }
 
     emitNoLine(s: string) {

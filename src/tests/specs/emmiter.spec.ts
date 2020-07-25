@@ -1,6 +1,6 @@
 import { Emmiter } from '../../core/codegen/emmiter'
 
-import { line } from '../../core/codegen/utils'
+import { line } from '../../utils/utils'
 
 it('emitter test ', () => {
 
@@ -10,8 +10,8 @@ it('emitter test ', () => {
     const e = new Emmiter()
     e.emit(content)
     expect(e.last).toBe(newContent)
+    // console.log(e)
     expect(e.content).toBe(newContent)
-
 })
 
 

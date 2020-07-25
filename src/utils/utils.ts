@@ -1,6 +1,6 @@
 export function between(ls: string[], between = ", ") {
     // same as ls.length == 0
-    if (ls.length) {
+    if (ls.length === 0) {
         return ""
     }
 
@@ -18,7 +18,11 @@ export function char_count(str: string, letter: string) {
 }
 
 export function line(content = "") {
-    return content + NEW_LINE
+    return content + NL
 }
 
-export const NEW_LINE = '\n'
+export function braces(content = "", start = "{", end = "}") {
+    return start + content + end
+}
+
+export const NL = '\n'

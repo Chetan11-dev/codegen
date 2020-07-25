@@ -1,4 +1,4 @@
-import { between, newline, NEW_LINE } from './utils'
+import { between, line, NEW_LINE } from './utils'
 
 export class Emmiter {
 
@@ -50,7 +50,7 @@ export class Emmiter {
     // }
 
     emitLine() {
-        this.add(newline())
+        this.add(line())
     }
 
     emitWithIndent(content: string) {

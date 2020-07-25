@@ -1,4 +1,4 @@
-import { Emmiter } from '../../core/core/emmiter'
+import { Emmiter } from './emmiter'
 
 export interface Spec {
 
@@ -18,10 +18,8 @@ export class CodeGenerator implements SpecVisitor<Emmiter>  {
         e.emit(s)
         return e
     }
-
 }
 
-// eg: const f = new Field("fruit" , false , "String" , "const")
 export class Field implements Spec {
 
     constructor(public name: string, public type: string, public modifier: "final" | "var" | "const",) { }

@@ -1,5 +1,6 @@
-import { Emmiter, } from './emmiter'
-import { newline as line } from './utils'
+import { Emmiter } from '../../core/codegen/emmiter'
+
+import { line } from '../../core/codegen/utils'
 
 it('emitter test ', () => {
 

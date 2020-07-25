@@ -1,13 +1,11 @@
-
 export function between(ls: string[], between = ", ") {
-    if (ls.length == 0) {
+    // same as ls.length == 0
+    if (ls.length) {
         return ""
     }
 
     return ls.reduce((r, rs) => r + between + rs)
 }
-
-
 
 export function char_count(str: string, letter: string) {
     var letter_Count = 0
@@ -19,10 +17,8 @@ export function char_count(str: string, letter: string) {
     return letter_Count
 }
 
-export function newline(content = "") {
+export function line(content = "") {
     return content + NEW_LINE
 }
-
-
 
 export const NEW_LINE = '\n'

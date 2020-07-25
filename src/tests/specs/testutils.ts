@@ -1,5 +1,5 @@
-import { Field, Spec, CodeGenerator } from './Base'
-import { Emmiter } from '../../core/core/emmiter'
+import { Field, Spec, CodeGenerator } from '../../core/codegen/Base'
+import { Emmiter } from '../../core/codegen/emmiter'
 export function equalsDart(p: Spec, content: string) {
     expect(dartCode(p)).toBe(content)
 }

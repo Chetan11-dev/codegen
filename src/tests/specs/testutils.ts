@@ -17,8 +17,17 @@ export function dartCode(p: Spec) {
     return [((p.accept(new CodeGenerator(), e)).content), e]
 }
 
-function logCode(p: Spec) {
-    logString(dartCode(p)[0] as string)
+export function logCode(p: Spec, shouldLogUniCode = true) {
+    if (shouldLogUniCode) {
+        logString(dartCode(p)[0] as string)
+    } else {
+        log(dartCode(p)[0] as string)
+    }
+}
+function log(params: string) {
+    console.log("---------------------")
+    console.log(params)
+    console.log("---------------------")
 }
 
 // Logs string displaying all \n 

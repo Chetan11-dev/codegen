@@ -84,7 +84,7 @@ export class Parameter implements Spec {
         return new Parameter(name, this.type, this.isNamed, this.isThis, this.required, this.modifier)
     }
 
-    constructor(public name: string, public type: string, public isNamed: boolean,
+    constructor(public name: string, public type?: string, public isNamed: boolean,
         public isThis: boolean, public required: boolean, public modifier: 'final' | 'var' | 'const' = "final") { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {

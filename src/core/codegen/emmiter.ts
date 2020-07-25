@@ -7,6 +7,8 @@ export class Emmiter {
     private ls: string[] = []
     indent: number = 3
 
+
+
     public get content(): string {
         // console.log(between(this.ls, ""))
         return between(this.ls, "")

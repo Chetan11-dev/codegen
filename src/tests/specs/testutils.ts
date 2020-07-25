@@ -11,3 +11,4 @@ export function dartCode(p: Spec) {
 export function printDartCode(p: Spec) {
     console.log(dartCode(p))
 }
+export const strings = ['a', 'b', 'c']

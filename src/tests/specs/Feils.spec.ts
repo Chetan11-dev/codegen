@@ -1,6 +1,5 @@
-import { Field, Spec, CodeGenerator } from '../../core/codegen/Base'
-import { Emmiter } from '../../core/codegen/emmiter'
-import { equalsDart } from './testutils'
+import { Field, Code } from '../../core/codegen/Base'
+import { equalsDart, strings } from './testutils'
 export { }
 
 test('should emit correct field', () => {
@@ -9,3 +8,7 @@ test('should emit correct field', () => {
     equalsDart(f, "const String fruit;\n")
 })
 
+test('Code test', () => {
+    const c = new Code(strings)
+    expect(c.code).toBe("a\nb\nc\n")
+})

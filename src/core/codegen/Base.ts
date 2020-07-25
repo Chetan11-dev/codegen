@@ -2,6 +2,7 @@ import { Emmiter } from './emmiter'
 import { NL, between, braces } from '../../utils/utils'
 import { isListNotEmpty, isNotEmptyString } from '../../utils/tsUtils'
 
+import indentString from 'indent-string'
 export interface Spec {
 
 
@@ -25,7 +26,6 @@ export class CodeGenerator implements SpecVisitor<Emmiter>  {
     }
 
     visitMethod(spec: Method, e: Emmiter): Emmiter {
-        const indentedCode = spec.code
         var params = ""
         const unp = this.visitParameter(spec.unnamedParams)
         const np = this.visitParameter(spec.namedParams)
@@ -42,8 +42,9 @@ export class CodeGenerator implements SpecVisitor<Emmiter>  {
         } else {
             params = ''
         }
+        const indentedCode = indentString(spec.code.code)
 
-        const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}${NL}}`
+        const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}${NL}`
         e.emit(s)
         return e
     }
@@ -76,6 +77,14 @@ export class Field implements Spec {
         return visitor.visitField(this, emitter)
     }
 }
+export class Code {
+
+    constructor(private codes: string[] = []) { }
+
+    public get code(): string {
+        return between(this.codes.map(c => c + "\n"), "")
+    }
+}
 
 
 
@@ -95,7 +104,7 @@ export class Class implements Spec {
 // BuiltList<Parameter> get requiredParameters;
 export class Method implements Spec {
 
-    constructor(public name: string, public returnType: string, public code: string,
+    constructor(public name: string, public returnType: string, public code: Code,
         public namedParams: Parameter[], public unnamedParams: Parameter[]) { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {

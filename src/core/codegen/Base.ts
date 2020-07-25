@@ -1,5 +1,6 @@
 import { between, braces } from '../../utils/utils'
 import { isNotEmptyString } from '../../utils/tsUtils'
+// import { Parameter } from './Base'
 
 export interface Spec {
 
@@ -11,25 +12,16 @@ export interface Spec {
 // E will be emitter could change definetly
 export interface SpecVisitor<E> {
 
-    visitField(spec: Field, e: E): E
+    visitField(spec: Parameter, e: E): E
 
     visitMethod(spec: Method, e: E): E
 
     visitClass(spec: Class, e: E): E
 
-
     visitConstructor(spec: Constructor, e: E): E
 
 }
 
-export class Field implements Spec {
-
-    constructor(public name: string, public type: string, public modifier: "final" | "var" | "const",) { }
-
-    accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
-        return visitor.visitField(this, emitter)
-    }
-}
 export class Code {
 
     constructor(private codes: string[] = []) { }
@@ -40,27 +32,21 @@ export class Code {
 }
 
 
-
 export class Class implements Spec {
 
-    constructor(public name: string, public type: string, public modifier: "final" | "var" | "const",) { }
+    constructor(public name: string, public cons: Constructor, public methods: Method[]) { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
-        return visitor.visitField(this, emitter)
+        return visitor.visitClass(this, emitter)
     }
 }
-
-// /// Optional parameters.
-// BuiltList<Parameter> get optionalParameters;
-
-// /// Required parameters.
-// BuiltList<Parameter> get requiredParameters;
 export class Method implements Spec {
 
     constructor(public name: string, public returnType: string, public code: Code,
         public unnamedParams: Parameter[], public namedParams: Parameter[]) { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
+
         return visitor.visitMethod(this, emitter)
     }
 }
@@ -72,28 +58,56 @@ export class Constructor implements Spec {
     }
 }
 
-export class Parameter {
 
-    /**
+// export interface Parameter {
+//     isNamed: boolean
+//     name: string
+//     type: string
+
+//     /**
+//      * 
+//     @param isThis -  This is only valid on constructors;
+//     @param modifier -  This is only valid on constructors;
+//     **/
+//     modifier?: 'final' | 'var' | 'const'
+//     isThis: boolean
+//     required: boolean
+// }
+export class Parameter implements Spec {
+
+    /** 
     @param isThis -  This is only valid on constructors;
+    @param modifier -  This is only valid on constructors;
     **/
 
+    copyWith(name: string): Parameter {
+        return new Parameter(name, this.type, this.isNamed, this.isThis, this.required, this.modifier)
+    }
+
     constructor(public name: string, public type: string, public isNamed: boolean,
-        public isThis: boolean, public required: boolean) { }
+        public isThis: boolean, public required: boolean, public modifier: 'final' | 'var' | 'const' = "final") { }
+
+    accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
+        return visitor.visitField(this, emitter)
+    }
 
 }
 
 
-// export interface Parameter {
+// export class Field implements Spec {
 
-//     name: string 
-//     isNamed: boolean 
-//     type: string
+//     constructor(public name: string, public type: string, public modifier: 'final' | 'var' | 'const'
+//     ) { }
 
-//     /**
-//     @param isThis -  This is only valid on constructors;
-//     **/
-
-//     isThis: boolean
-//     required: boolean
+//     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
+//         return visitor.visitField(this, emitter)
+//     }
 // }
+
+// export class Parameter implements Spec {
+
+//     constructor(public name: string, public type: string,  { ...Parameter} ) { }
+
+// }
+
+// Not needed modifier 

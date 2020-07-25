@@ -1,4 +1,4 @@
-import { Field, Spec } from '../../core/codegen/Base'
+import { Spec } from '../../core/codegen/Base'
 import { CodeGenerator } from "../../core/codegen/CodeGenerator"
 import { Emmiter } from '../../core/codegen/emmiter'
 export function equalsDart(p: Spec, content: string, log = false) {

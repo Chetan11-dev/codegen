@@ -2,7 +2,7 @@ import { Emmiter } from './emmiter'
 import { NL, between } from '../../utils/utils'
 import { isListNotEmpty } from '../../utils/tsUtils'
 import indentString from 'indent-string'
-import { SpecVisitor, Constructor, Class, Method, Parameter, Field } from './Base'
+import { SpecVisitor, Constructor, Class, Method, Parameter } from './Base'
 
 export class CodeGenerator implements SpecVisitor<Emmiter> {
 
@@ -14,6 +14,9 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
 
     }
     visitClass(spec: Class, e: Emmiter): Emmiter {
+        const indentedCode = indentString("", e.indent)
+        const s = `class ${spec.name}{${NL}${indentedCode}}`
+        e.emit(s)
         return e
     }
 
@@ -68,7 +71,8 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
         return (`${p.required ? "@required " : ""}${p.type} ${p.name}`)
     }
 
-    visitField(spec: Field, e: Emmiter): Emmiter {
+    visitField(spec: Parameter, e: Emmiter): Emmiter {
+
         const s = `${spec.modifier} ${spec.type} ${spec.name};`
         e.emit(s)
         return e

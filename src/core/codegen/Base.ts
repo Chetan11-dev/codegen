@@ -28,6 +28,7 @@ export class CodeGenerator implements SpecVisitor<Emmiter>  {
     visitMethod(spec: Method, e: Emmiter): Emmiter {
         var params = ""
         const unp = this.visitParameter(spec.unnamedParams)
+
         const np = this.visitParameter(spec.namedParams)
 
 
@@ -35,16 +36,17 @@ export class CodeGenerator implements SpecVisitor<Emmiter>  {
         // handle case for one and one 
         if (isListNotEmpty(spec.unnamedParams) && isListNotEmpty(spec.namedParams)) {
             params = `${unp},{${np}}`
-        } else if (isListNotEmpty(spec.namedParams)) {
-            params = `${unp}`
         } else if (isListNotEmpty(spec.unnamedParams)) {
+            params = `${unp}`
+        } else if (isListNotEmpty(spec.namedParams)) {
             params = `{${np}}`
         } else {
             params = ''
         }
-        const indentedCode = indentString(spec.code.code)
 
-        const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}${NL}`
+        const indentedCode = indentString(spec.code.code, e.indent)
+        // console.log({ params, np ,unp })
+        const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}`
         e.emit(s)
         return e
     }
@@ -82,7 +84,7 @@ export class Code {
     constructor(private codes: string[] = []) { }
 
     public get code(): string {
-        return between(this.codes.map(c => c + "\n"), "")
+        return between(this.codes.map(c => c + ";\n"), "")
     }
 }
 
@@ -105,7 +107,7 @@ export class Class implements Spec {
 export class Method implements Spec {
 
     constructor(public name: string, public returnType: string, public code: Code,
-        public namedParams: Parameter[], public unnamedParams: Parameter[]) { }
+        public unnamedParams: Parameter[], public namedParams: Parameter[]) { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitMethod(this, emitter)
@@ -113,8 +115,28 @@ export class Method implements Spec {
 }
 
 export class Parameter {
-    /// toThis => This is only valid on constructors;
-    constructor(public name: string, public isNamed: boolean, public type: string,
-        public isThis: boolean, public required: boolean) { }
+
+    /**
+    @param isThis -  This is only valid on constructors;
+    **/
+
+    constructor(public name: string, public type: string, public isNamed = false,
+        public isThis: boolean = false, public required: boolean = false) { }
 
 }
+
+
+// export interface Parameter {
+
+//     name: string 
+//     isNamed: boolean 
+//     type: string
+
+//     /**
+//     @param isThis -  This is only valid on constructors;
+//     **/
+
+//     isThis: boolean
+//     required: boolean
+// }
+

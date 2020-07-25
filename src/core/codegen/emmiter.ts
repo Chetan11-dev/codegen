@@ -5,6 +5,7 @@ export class Emmiter {
     // content: string = ""
     private defaultindent: string = '\t'
     private ls: string[] = []
+    indent: number = 3
 
     public get content(): string {
         // console.log(between(this.ls, ""))

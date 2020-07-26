@@ -1,15 +1,15 @@
-class name extends StatefulWidget {
-  name({Key key}) : super(key: key);
+class Apple extends StatefulWidget {
+  App({Key key}) : super(key: key);
 
   @override
-  _nameState createState() => _nameState();
+  _AppState createState() => _AppState();
 }
 
-class _nameState extends State<name> {
+class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Container(
        child: child,
     );
   }
-};
+}

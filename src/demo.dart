@@ -1,45 +1,20 @@
 class Fruit {
-  final String a;
-  final String b;
   final String c;
   final String d;
+  final String a;
+  final String b;
 
   Fruit(this.a, this.b, {this.c, this.d});
 
-  dynamic haveFruit(String a, String b, {String c, String d}) {
-    a;
-    b;
-    c;
+  @override
+  String toString() {
+    return 'Fruit {c: $c, d: $d, a: $a, b: $b};';
   }
 
   @override
-  String toString() {
-    return 'Fruit {a: $a, b: $b, c: $c, d: $d};';
-  }
-
   bool operator ==(Object o) {
     if (identical(this, o)) return true;
 
-    return o is Fruit && o.a == a && o.b == b && o.c == c && o.d == d;
+    return o is Fruit && o.c == c && o.d == d && o.a == a && o.b == b;
   }
-}
-
-main(List<String> args) {
-  final f = new Fruit(
-    "a",
-    "a",
-  );
-
-  print(f == f);
-  print(f == null);
-  print(f ==
-      new Fruit(
-        "a",
-        "a",
-      ));
-  print(f ==
-      new Fruit(
-        "a",
-        "b",
-      ));
 }

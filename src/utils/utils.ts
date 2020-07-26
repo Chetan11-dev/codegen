@@ -3,6 +3,9 @@ export function between(ls: string[], between = ", ") {
     if (ls.length === 0) {
         return ""
     }
+    if (ls.length === 1) {
+        return ls[0]
+    }
 
     return ls.reduce((r, rs) => r + between + rs)
 }

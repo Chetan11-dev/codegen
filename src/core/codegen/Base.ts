@@ -9,6 +9,12 @@ export interface Spec {
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T
 }
 
+export interface ClassOptions {
+    generatetoString?: boolean
+    generateEquals?: boolean
+}
+
+
 // E will be emitter could change definetly
 export interface SpecVisitor<E> {
 
@@ -34,9 +40,20 @@ export class Code {
 
 export type f = (classname: string, ps: Parameter[]) => Method
 
+interface ClassInfo extends ParamInfo {
+    cons?: Constructor, pr?: string, imports?: Code, className: string
+}
+
 export class Class implements Spec {
 
-    constructor(public name: string, public methods: Method[], public classdeoendentmethods: f[], public cons?: Constructor, public pr?: Parent, public imports?: Code,) { }
+    constructor(
+        public ci: ClassInfo,
+
+        public classdependentmethods: f[] = [],
+        public methods: Method[] = [],
+
+    ) {
+    }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitClass(this, emitter)
@@ -50,23 +67,29 @@ export interface Parent {
 
 export class Method implements Spec {
 
-    constructor(public name: string, public returnType: string, public code: Code,
-        public unnamedParams: Parameter[], public namedParams: Parameter[], public anaotations: string = "") { }
+    constructor(
+        public mu: MethodInfo,
+        public pi: ParamInfo = { namedParams: [], unnamedParams: [] }, public anaotations: string = "") { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
-
         return visitor.visitMethod(this, emitter)
     }
 }
 
-export interface Options {
-    equals: Boolean
-    toString: Boolean
-    hashCode: Boolean
+interface MethodInfo {
+    name: string, returnType: string, code: Code
+}
+interface ParamInfo {
+    unnamedParams: Parameter[], namedParams: Parameter[]
+}
+interface ClassNameAndParams extends ParamInfo {
+    className: string,
 }
 
 export class Constructor implements Spec {
-    constructor(public className: string, public unnamedParams: Parameter[], public namedParams: Parameter[], public pr?: Parent) { }
+    constructor(
+        public ci: ClassNameAndParams,
+        public pr?: Parent) { }
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitConstructor(this, emitter)
     }
@@ -87,6 +110,17 @@ export class Constructor implements Spec {
 //     isThis: boolean
 //     required: boolean
 // }
+
+export interface ParameterOptions {
+    isThis?: boolean,
+    required?: boolean,
+}
+
+export interface ParameterInfo {
+    name: string, type: string,
+}
+
+
 export class Parameter implements Spec {
 
     /** 
@@ -95,12 +129,12 @@ export class Parameter implements Spec {
     **/
 
     copyWith(name: string): Parameter {
-        return new Parameter(name, this.type, this.isNamed, this.isThis, this.required, this.modifier)
+        return new Parameter({ ...this.pi, name }, { ...this.po }, this.modifier)
     }
 
-    constructor(public name: string, public type: string, public isNamed: boolean,
-        public isThis: boolean, public required: boolean, public modifier: 'final' | 'var' | 'const' = "final") { }
-
+    constructor(
+        public pi: ParameterInfo, public po: ParameterOptions = {}, public modifier: 'final' | 'var' | 'const' = 'final'
+    ) { }
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitField(this, emitter)
     }
@@ -117,7 +151,6 @@ export class Parameter implements Spec {
 //         return visitor.visitField(this, emitter)
 //     }
 // }
-
 // export class Parameter implements Spec {
 
 //     constructor(public name: string, public type: string,  { ...Parameter} ) { }

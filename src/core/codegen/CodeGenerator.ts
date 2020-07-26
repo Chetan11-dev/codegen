@@ -1,26 +1,39 @@
 import { Emmiter } from './emmiter'
 import { NL, between } from '../../utils/utils'
-import { isListNotEmpty, isEmptyString } from '../../utils/tsUtils'
+import { isListNotEmpty, isEmptyString, isNotEmptyString } from '../../utils/tsUtils'
 import indentString from 'indent-string'
-import { SpecVisitor, Constructor, Class, Method, Parameter } from './Base'
+import { SpecVisitor, Constructor, Class, Method, Parameter, Code } from './Base'
 
 export class CodeGenerator implements SpecVisitor<Emmiter> {
 
     visitConstructor(spec: Constructor, e: Emmiter): Emmiter {
         const params = this.makeParams(spec.unnamedParams, spec.namedParams, this.mapConstructorParam)
 
-        const s = `${spec.className}(${params});`
-
+        const s = `${spec.className}(${params})${spec.pr ? ` : super(${this.mapSuperParam(spec.pr.params)})${spec.pr.name}` : ""};`
         e.emit(s)
         return e
     }
+
+    mapSuperParam(ps: Parameter[]) {
+        return (between(ps.map(p => `${p.name} : ${p.name}`)))
+    }
+
+    mapSuperParams<E>(p: E, f: (e: E) => string) { }
+
+
     visitClass(spec: Class, e: Emmiter): Emmiter {
-        const s = `class ${spec.name} {`
+        // this.mapSuperParams(spec.imports , (i) => {
+
+        // })
+        var s = spec.imports ? `${spec.imports.code}\n` : ""
+        e.emitNoLine(s)
+
+        s = `class ${spec.name} ${spec.pr ? `extends ${spec.pr.name} ` : ''}{`
         e.emit(s)
 
         e.emitWithIndent((e) => {
 
-            const feilds = spec.cons.namedParams.concat(spec.cons.unnamedParams)
+            const feilds = spec.cons.unnamedParams.concat(spec.cons.namedParams)
 
             e.emitLine()
             feilds.forEach(f => this.visitField(f, e))
@@ -30,6 +43,11 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
             e.emitLine()
 
             spec.methods.forEach(m => this.visitMethod(m, e))
+            spec.classdeoendentmethods.forEach(m => {
+                this.visitMethod(m(spec.name, feilds), e)
+            })
+
+
         })
 
         e.emit("}")
@@ -41,8 +59,13 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
 
         const indentedCode = indentString(spec.code.code, e.indent)
         // console.log({ params, np ,unp })
-        const s = `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}`
 
+        var s = ""
+        if (isNotEmptyString(spec.anaotations)) {
+            s = spec.anaotations + "\n"
+        }
+        s = s + `${spec.returnType} ${spec.name}(${params}){${NL}${indentedCode}}`
+        // console.log(s)
         e.emit(s)
         e.emitLine()
         return e

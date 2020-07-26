@@ -32,18 +32,26 @@ export class Code {
 }
 
 
+export type f = (classname: string, ps: Parameter[]) => Method
+
 export class Class implements Spec {
 
-    constructor(public name: string, public cons: Constructor, public methods: Method[]) { }
+    constructor(public name: string, public cons: Constructor, public methods: Method[], public classdeoendentmethods: f[], public pr?: Parent, public imports?: Code) { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitClass(this, emitter)
     }
 }
+
+export interface Parent {
+    name: string,
+    params: Parameter[]
+}
+
 export class Method implements Spec {
 
     constructor(public name: string, public returnType: string, public code: Code,
-        public unnamedParams: Parameter[], public namedParams: Parameter[]) { }
+        public unnamedParams: Parameter[], public namedParams: Parameter[], public anaotations: string = "") { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
 
@@ -51,8 +59,14 @@ export class Method implements Spec {
     }
 }
 
+export interface Options {
+    equals: Boolean
+    toString: Boolean
+    hashCode: Boolean
+}
+
 export class Constructor implements Spec {
-    constructor(public className: string, public unnamedParams: Parameter[], public namedParams: Parameter[]) { }
+    constructor(public className: string, public unnamedParams: Parameter[], public namedParams: Parameter[], public pr?: Parent) { }
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitConstructor(this, emitter)
     }
@@ -84,7 +98,7 @@ export class Parameter implements Spec {
         return new Parameter(name, this.type, this.isNamed, this.isThis, this.required, this.modifier)
     }
 
-    constructor(public name: string, public type?: string, public isNamed: boolean,
+    constructor(public name: string, public type: string, public isNamed: boolean,
         public isThis: boolean, public required: boolean, public modifier: 'final' | 'var' | 'const' = "final") { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {

@@ -1,6 +1,6 @@
-import { Spec } from '../../core/codegen/Base'
-import { CodeGenerator } from "../../core/codegen/CodeGenerator"
-import { Emmiter } from '../../core/codegen/emmiter'
+import { Spec } from '../core/codegen/Base'
+import { CodeGenerator } from "../core/codegen/CodeGenerator"
+import { Emmiter } from '../core/codegen/emmiter'
 export function equalsDart(p: Spec, content: string, log = false) {
 
 
@@ -12,10 +12,16 @@ export function equalsDart(p: Spec, content: string, log = false) {
     return e as Emmiter
 }
 
+
 export function dartCode(p: Spec) {
     const e = new Emmiter()
     return [((p.accept(new CodeGenerator(), e)).content), e]
 }
+
+export function codeGenCheck(p: (c: CodeGenerator) => void,) {
+    p(new CodeGenerator())
+}
+
 
 export function logCode(p: Spec, shouldLogUniCode = true) {
     if (shouldLogUniCode) {
@@ -24,10 +30,11 @@ export function logCode(p: Spec, shouldLogUniCode = true) {
         log(dartCode(p)[0] as string)
     }
 }
+
 function log(params: string) {
-    console.log("---------------------")
-    console.log(params)
-    console.log("---------------------")
+    console.log("---------------------\n" + params + "\n---------------------")
+    // console.log(params)
+    // console.log("---------------------")
 }
 
 // Logs string displaying all \n 

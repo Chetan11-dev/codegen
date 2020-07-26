@@ -110,7 +110,7 @@ function optionsToMeth(os: ClassOptions,) {
 
 function generateEquals(
     classname: string, ps: Parameter[],) {
-    const ls = ps.map(p => `o.${p.pi.name} == ${p.pi.name} `)
+    const ls = ps.map(p => `o.${p.pi.name} == ${p.pi.name}`)
     ls.unshift(`o is ${classname}`)
     const s = between(ls, " && ")
     // new Parameter("o", "Object", false, false, false)

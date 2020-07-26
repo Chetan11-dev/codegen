@@ -23,8 +23,7 @@ test('should emit correct Class Simple', () => {
     const cl = new Class({ namedParams: namedParams, unnamedParams, className: "Fruit" },
         [generateToString, generateEquals], [m])
 
-    const clex =
-        'class Fruit {\n' +
+    const clex = 'class Fruit {\n' +
         '   final String a;\n' +
         '   final String b;\n' +
         '   final String c;\n' +
@@ -38,14 +37,14 @@ test('should emit correct Class Simple', () => {
         '\n' +
         '   @override\n' +
         '   String toString(){\n' +
-        "      return 'Fruit {a: $a, b: $b, c: $c, d: $d};';\n" +
+        "      return 'Fruit {a: $a, b: $b, c: $c, d: $d}';\n" +
         '   }\n' +
         '\n' +
         '   @override\n' +
         '   bool operator ==(Object o){\n' +
         '      if (identical(this,o)) return true;\n' +
         '\n' +
-        '      return  o is Fruit && o.a == a  && o.b == b  && o.c == c  && o.d == d ;\n' +
+        '      return  o is Fruit && o.a == a && o.b == b && o.c == c && o.d == d;\n' +
         '   }\n' +
         '\n' +
         '}\n'
@@ -70,14 +69,14 @@ test('should emit correct Class given no feilds and constructor', () => {
         '\n' +
         '   @override\n' +
         '   String toString(){\n' +
-        "      return 'Fruit {a: $a, b: $b, c: $c, d: $d};';\n" +
+        "      return 'Fruit {a: $a, b: $b, c: $c, d: $d}';\n" +
         '   }\n' +
         '\n' +
         '   @override\n' +
         '   bool operator ==(Object o){\n' +
         '      if (identical(this,o)) return true;\n' +
         '\n' +
-        '      return  o is Fruit && o.a == a  && o.b == b  && o.c == c  && o.d == d ;\n' +
+        '      return  o is Fruit && o.a == a && o.b == b && o.c == c && o.d == d;\n' +
         '   }\n' +
         '\n' +
         '}\n'

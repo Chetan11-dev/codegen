@@ -7,9 +7,10 @@ import { SpecVisitor, Constructor, Class, Method, Parameter, Code } from './Base
 export class CodeGenerator implements SpecVisitor<Emmiter> {
 
     visitConstructor(spec: Constructor, e: Emmiter): Emmiter {
+
         const params = this.makeParams(spec.unnamedParams, spec.namedParams, this.mapConstructorParam)
 
-        const s = `${spec.className}(${params})${spec.pr ? ` : super(${this.mapSuperParam(spec.pr.params)})${spec.pr.name}` : ""};`
+        const s = `${spec.className}(${params})${spec.pr ? ` : super(${this.mapSuperParam(spec.pr.params)})` : ""};`
         e.emit(s)
         return e
     }
@@ -25,24 +26,34 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
         // this.mapSuperParams(spec.imports , (i) => {
 
         // })
-        var s = spec.imports ? `${spec.imports.code}\n` : ""
-        e.emitNoLine(s)
 
+        var s = spec.imports ? `${spec.imports.code}\n` : ""
+
+        e.emitNoLine(s)
+        // console.log(e.last)
         s = `class ${spec.name} ${spec.pr ? `extends ${spec.pr.name} ` : ''}{`
         e.emit(s)
 
         e.emitWithIndent((e) => {
+            var feilds: Parameter[] = []
 
-            const feilds = spec.cons.unnamedParams.concat(spec.cons.namedParams)
+            if (spec.cons) {
+                feilds = spec.cons.unnamedParams.concat(spec.cons.namedParams)
+                if (isListNotEmpty(feilds)) {
+                    e.emitLine()
 
-            e.emitLine()
+                }
+            }
+
             feilds.forEach(f => this.visitField(f, e))
             e.emitLine()
 
-            this.visitConstructor(spec.cons, e)
-            e.emitLine()
-
+            if (spec.cons) {
+                this.visitConstructor(spec.cons, e)
+                e.emitLine()
+            }
             spec.methods.forEach(m => this.visitMethod(m, e))
+
             spec.classdeoendentmethods.forEach(m => {
                 this.visitMethod(m(spec.name, feilds), e)
             })

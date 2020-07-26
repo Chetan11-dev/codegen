@@ -36,7 +36,7 @@ export type f = (classname: string, ps: Parameter[]) => Method
 
 export class Class implements Spec {
 
-    constructor(public name: string, public cons: Constructor, public methods: Method[], public classdeoendentmethods: f[], public pr?: Parent, public imports?: Code) { }
+    constructor(public name: string, public methods: Method[], public classdeoendentmethods: f[], public cons?: Constructor, public pr?: Parent, public imports?: Code,) { }
 
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitClass(this, emitter)

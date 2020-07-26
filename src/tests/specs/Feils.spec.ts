@@ -60,21 +60,22 @@ test('should emit correct Constructor', () => {
     equalsDart(co, coex,)
 })
 
-// Included in class test
-// test('toString test', () => {
-//     codeGenCheck(c => {
-//         const e = c.generateToString(co.namedParams.concat(co.unnamedParams), new Emmiter(), "Apple")
-//         // console.log(e.content)
-//     })
-// })
-
-// test('equals test', () => {
-//     codeGenCheck(c => {
-//         const e = c.generateEquals(co.namedParams.concat(co.unnamedParams), new Emmiter(), "Apple")
-//         console.log(e.content)
-//     })
-// })
-
 test('Code test', () => {
     expect(c.code).toBe(cex)
+})
+
+
+test('should emit class with correct imports', () => {
+    const cl = new Class("Fruit", [], [], undefined, undefined, new Code(["import 'package:flutter/material.dart'"]))
+    const ex = "import 'package:flutter/material.dart';\n\nclass Fruit {\n\n}\n"
+    equalsDart(cl, ex,)
+})
+
+
+test('should emit class with correct EXTENDS', () => {
+    const cl = new Class("Fruit", [], [], new Constructor("Fruit", [], [], { name: "Veg", params: [new Parameter("key", "", false, false, false), new Parameter("keya", "", false, false, false)] }), { name: "Veg", params: [new Parameter("key", "", false, false, false), new Parameter("keya", "", false, false, false)] },)
+
+    const ex = 'class Fruit extends Veg {\n\n   Fruit() : super(key : key, keya : keya);\n\n}\n'
+
+    equalsDart(cl, ex,)
 })

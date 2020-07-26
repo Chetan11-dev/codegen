@@ -8,7 +8,7 @@ function generateToString(
 ) {
     const s = between(ps.map(p => `${p.pi.name}: $${p.pi.name}`))
 
-    return new Method({ name: "toString", returnType: "String", code: new Code([`return '${classname} {${s}};'`]) }
+    return new Method({ name: "toString", returnType: "String", code: new Code([`return '${classname} {${s}}'`]) }
         , { namedParams: [], unnamedParams: [] }, overrides)
 
 }
@@ -22,46 +22,82 @@ function generateToString(
 
 
 function generateBuildMethod(
+    classname: string,
+) {
+    return new Method({ name: "build", returnType: "Widget", code: new Code([`return Container(child: Text("Hello from ${classname}"),)`]) }
+        , { unnamedParams: [new Parameter({ name: "context", type: "BuildContext" },)], namedParams: [] }, overrides)
+}
+
+// @override
+// _AppleState createState() {
+//   return _AppleState();
+// }
+
+function generateCreateState(
     classname: string, ps: Parameter[],
 ) {
-    return new Method({ name: "build", returnType: "Widget", code: new Code([`return Container(child: Text("Hello from ${classname}"),);`]) }
-        , { namedParams: [new Parameter({ name: "context", type: "BuildContext" },)], unnamedParams: [] }, overrides)
-
+    const returnType = createReturnTypeStf(classname)
+    return new Method({ name: "createState", returnType, code: new Code([`return ${returnType}()`]) }
+        , { namedParams: [], unnamedParams: [] }, overrides)
 }
+
 const materialImport = new Code(["import 'package:flutter/material.dart'"])
 const keyParam = new Parameter({ name: "key", type: "Key" })
+function createReturnTypeStf(classname: string) {
+    return `_${classname}State`
+}
+
 // const keyParamForWidget = new Parameter("key", "Key", true, false, false)
 // const keyParamForWidget = new Parameter({name:"key",  type:"Key"} ,)
 
 function generateStatelessWidget(
     className: string, os: ClassOptions = {}, namedParams: Parameter[] = [], unnamedParams: Parameter[] = [],
 ) {
-    const meths = [generateBuildMethod]
 
-
-    addClassOverrides(os, meths)
-
-    namedParams.unshift(keyParam)
-
-
-    const c = new Constructor({ className: "Fruit", namedParams: [], unnamedParams: [] }, {
-        name: "Veg", params: [
-            new Parameter({ name: "key", type: "Key" },),
-            new Parameter({ name: "keya", type: "Key" },)
-        ]
-    })
+    const meths = optionsToMeth(os)
 
     const cl = new Class({
         className, namedParams, unnamedParams, imports: materialImport,
-        pr: { name: "StatelessWidget", params: [] }
+        pr: "StatelessWidget"
         , cons: new Constructor({ className, namedParams, unnamedParams }, { name: "StatelessWidget", params: [keyParam] })
-    })
+    }, meths, [generateBuildMethod(className)])
 
     return cl
 }
 
+function generateStatefullWidget(
+    className: string, os: ClassOptions = {}, namedParams: Parameter[] = [], unnamedParams: Parameter[] = [],
+) {
+    const returnclasses = []
+    // Create StateWidget
+    const cl = generateStatelessWidget(className, os, namedParams, unnamedParams)
+    changeParent(cl, "StatefulWidget")
 
-function addClassOverrides(os: ClassOptions, meths: ((classname: string, ps: Parameter[]) => Method)[]) {
+    // remove only build method
+    cl.methods = []
+    cl.classdependentmethods.push(generateCreateState)
+    returnclasses.push(cl)
+
+    // Create State
+    const cl1 = new Class({
+        className:
+            createReturnTypeStf(className), namedParams: [], unnamedParams: [],
+        pr: `State<${className}>`
+    }, [], [generateBuildMethod(className)])
+    returnclasses.push(cl1)
+    return returnclasses
+}
+
+// function clearClassDependentMethods(cl: Class) {
+//     cl.classdependentmethods = []
+// }
+function changeParent(cl: Class, s: string) {
+    cl.ci.pr = s
+    cl.ci.cons!.pr!.name = s
+}
+
+function optionsToMeth(os: ClassOptions,) {
+    const meths = []
     if (os.generateEquals) {
         meths.push(generateEquals)
     }
@@ -69,6 +105,7 @@ function addClassOverrides(os: ClassOptions, meths: ((classname: string, ps: Par
     if (os.generatetoString) {
         meths.push(generateToString)
     }
+    return meths
 }
 
 function generateEquals(
@@ -89,4 +126,4 @@ function generateEquals(
     // return m
 }
 
-export { materialImport, keyParam, generateEquals, generateToString, generateBuildMethod, generateStatelessWidget }
+export { materialImport, keyParam, generateEquals, generateToString, generateBuildMethod, generateStatelessWidget, generateStatefullWidget }

@@ -1,35 +1,15 @@
-import { Code, Method, Parameter, Constructor, Class, } from '../../core/codegen/Base'
-import { equalsDart, strings, dartCode, logString, logCode, codeGenCheck } from '../testutils'
-import { Emmiter } from '../../core/codegen/emmiter'
-import { generateToString, generateEquals, materialImport } from '../../core/codegen/extensions'
+import { Parameter, Constructor, Class, } from '../../core/codegen/Base'
+import { equalsDart } from '../testutils'
+import { materialImport } from '../../core/codegen/extensions'
+import { f, m, co, c, unnamedParams, namedParams } from '../shared/shared'
 export { }
 
 
 
-// TYPE IS NOT DEFINED IN CASE OF 
-export const a: Parameter = new Parameter({ name: "a", type: "" },)
-export const unnamedParams: Parameter[] = [a, a.copyWith("b")]
-export const namedParams: Parameter[] = [a.copyWith("c"), a.copyWith("d")]
-// const unnamedfields: Field[] = [new Field("a", "String", "const"), new Field("b", "String", "const")]
-// const namedfields: Field[] = [new Field("c", "String", "const"), new Field("d", "String", "const")]
-
-export const c = new Code(strings)
 export const cex = "a;\nb;\nc;\n"
 
-export const f: Parameter = a.copyWith("e")
 export const fex = "final e;\n"
 
-export const m = new Method({ name: "haveFruit", returnType: "dynamic", code: c }, {
-    unnamedParams: unnamedParams.map(p => {
-        p.pi.type = "String"
-        return p
-    }),
-    namedParams:
-        namedParams.map(p => {
-            p.pi.type = "String"
-            return p
-        })
-})
 
 export const mex = 'dynamic haveFruit(String a, String b,{String c, String d}){\n' +
     '   a;\n' +
@@ -37,13 +17,6 @@ export const mex = 'dynamic haveFruit(String a, String b,{String c, String d}){\
     '   c;\n' +
     '}\n\n'
 
-export const co = new Constructor({
-    className: "Fruit",
-    namedParams: namedParams
-    ,
-    unnamedParams: unnamedParams,
-
-})
 
 const coex = 'Fruit(this.a, this.b,{this.c, this.d});\n'
 
@@ -74,27 +47,28 @@ test('should emit class with correct imports', () => {
 })
 
 
-test('apaaaw should emit class with correct EXTENDS', () => {
+test('class should emit class with correct EXTENDS', () => {
 
 
-    const c = new Constructor({ className: "Fruit", namedParams, unnamedParams: [] }, {
+    const c = new Constructor({ className: "Fruit", namedParams, unnamedParams }, {
         name: "Veg", params: [
             new Parameter({ name: "key", type: "Key" },),
             new Parameter({ name: "keya", type: "Key" },)
         ]
     })
 
-    const cl = new Class({ className: "Fruit", namedParams, unnamedParams: [], cons: c, pr: "Veg" },)
+    const cl = new Class({ className: "Fruit", namedParams, unnamedParams, cons: c, pr: "Veg" }, [],)
 
-    // const cl = new wqClass("Fruit", [], [],
-    //  new Constructor("Fruit", [], [], { name: "Veg",
-    //   params: [
-    // new Parameter("key", "", false, false, false),
-    //    new Parameter("keya", "", false, false, false)] }), 
-    //    { name: "Veg", params: [new Parameter("key", "", false, false, false),
-    //  new Parameter("keya", "", false, false, false)] },)
 
-    const ex = 'class Fruit extends Veg {\n\n   Fruit() : super(key : key, keya : keya);\n\n}\n'
-
-    equalsDart(cl, ex, true)
+    const ex = 'class Fruit extends Veg {\n' +
+        '   final String a;\n' +
+        '   final String b;\n' +
+        '   final String c;\n' +
+        '   final String d;\n' +
+        '\n' +
+        '   Fruit(this.a, this.b,{this.c, this.d, Key key, Key keya}) : super(key : key, keya : keya);\n' +
+        '\n' +
+        '}\n'
+    // logCode(cl, false)
+    equalsDart(cl, ex,)
 })

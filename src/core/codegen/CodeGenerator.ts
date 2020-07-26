@@ -51,7 +51,7 @@ export class CodeGenerator implements SpecVisitor<Emmiter> {
             // namedParams.push(...spec.pr.params)
         }
         var params = ""
-        console.log({ unp, np })
+        // console.log({ unp, np })
         if (isNotEmptyString(unp) && isNotEmptyString(np)) {
             params = `${unp},{${np}}`
         }

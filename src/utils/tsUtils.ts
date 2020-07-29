@@ -27,7 +27,7 @@ export function removeItemAll(arr: any[], value: any) {
     return arr
 }
 
-export function arraysEqual(a: any[], b: any[]) {
+export function arraysEqual(a: any, b: any) {
     if (a === b) return true
     if (a == null || b == null) return false
     if (a.length !== b.length) return false

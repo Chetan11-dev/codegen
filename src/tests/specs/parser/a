@@ -1,0 +1,9 @@
+
+    ^make\s+(cl|func)(.*)
+    make   func  r !r  n !n
+^\bparams\b
+params
+optional match 
+^(s|d|i|d)\s+(\w+)(.*)?
+i s ff f 
+d s ff f

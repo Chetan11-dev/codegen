@@ -10,6 +10,14 @@ export function between(ls: string[], between = ", ") {
     return ls.reduce((r, rs) => r + between + rs)
 }
 
+export function splitBySpaces(text: string) {
+    text = text.trim()
+    // replace more than  2  spaces with 1 
+    text = text.replace(/\s{2,}/g, ' ')
+    return text.split(" ")
+        .filter(t => t.length > 0)
+
+}
 export function char_count(str: string, letter: string) {
     var letter_Count = 0
     for (var position = 0; position < str.length; position++) {

@@ -1,7 +1,8 @@
 const m: any = {
     s: 'String',
     i: 'int',
-    d: 'double',
+    db: 'double',
+    d: 'dynamic',
     f: 'float',
     ls: 'List<dynamic>'
 }

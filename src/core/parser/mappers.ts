@@ -1,4 +1,4 @@
-import { Class, ParameterOptions, ParameterInfo, Parameter, ClassOptions, Method } from '../../../core/codegen/Base'
+import { Class, ParameterOptions, ParameterInfo, Parameter, ClassOptions, Method } from '../codegen/Base'
 
 export const defaultClassOptions = (['!r', 'n', '!f'].concat(['str', 'eq']))
 

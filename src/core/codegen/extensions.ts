@@ -57,7 +57,7 @@ function addParamsToParent(cl: Class, params: Parameter) {
 }
 
 var buildmeth: Method
-export function generateStatelessWidget_(
+export function generateStatelessWidget(
     cl: Class
 ) {
     buildmeth = generateBuildMethod(cl.ci.className)
@@ -69,10 +69,10 @@ export function generateStatelessWidget_(
     return cl
 }
 
-export function generateStatefullWidget_(
+export function generateStatefullWidget(
     cl: Class
 ) {
-    generateStatelessWidget_(cl)
+    generateStatelessWidget(cl)
     const a = cl.methods.find(f => {
         return buildmeth === f
     })

@@ -1,16 +1,16 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable no-throw-literal */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Line } from './parser.spec'
-import { matchParam, matchMeth, argsCapture, matchClassDeclarations, matchFuncDeclarations, matchDeclaration, mathMethParamField } from './matchDeclaration'
-import { Class, ParameterInfo, Constructor, Method, Code, printCode } from '../../../core/codegen/Base'
-import { impossible } from './impossible'
+import { Line } from '../../tests/specs/parser/parser.spec'
+import { matchParam, matchMeth, argsCapture, matchClassDeclarations, matchFuncDeclarations, matchDeclaration, mathMethParamField } from './regex'
+import { Class, ParameterInfo, Constructor, Method, Code, printCode } from '../codegen/Base'
+import { impossible } from '../../utils/dateUtils/impossible'
 import { determineDefaultOptions, defaultClassOptions, DefaultOptionFromMeths, mapParams, mapParamsForMeth, seperateParams, generateClassOptions, copyFeildsToConstructore, generateStateOptions, defaultMethOptions, isAnyRequiredClass, isAnyRequiredMeths } from './mappers'
-import { split } from '../../../utils/utils'
-import { optionsToMeth, generateStatelessWidget_, generateStatefullWidget_ } from '../../../core/codegen/extensions'
-import { logCode, specsToStr } from '../../testutils'
+import { split } from '../../utils/utils'
+import { optionsToMeth, generateStatelessWidget, generateStatefullWidget } from '../codegen/extensions'
+import { logCode, specsToStr } from '../../tests/testutils'
 import { dartTypeOf } from './objectsmappers'
-import { Emmiter } from '../../../core/codegen/emmiter'
+import { Emmiter } from '../codegen/emmiter'
 interface ReturnType {
     stateFull?: {
         state: Class
@@ -55,11 +55,11 @@ function toClass(p: RegExpExecArray, meths: RegExpExecArray[], params: RegExpExe
     meths.forEach(m => toFuncs(m))
 
     if (stateOptions.stf) {
-        const st = generateStatefullWidget_(cl)
+        const st = generateStatefullWidget(cl)
         return [st.widget, st.state]
     }
     else if (stateOptions.stl) {
-        return [generateStatelessWidget_(cl)]
+        return [generateStatelessWidget(cl)]
     }
 
     if (isAnyRequiredClass(cl)) {

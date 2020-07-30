@@ -1,4 +1,4 @@
-import { mapParams, AggregateParam, copyFeildsToConstructore, seperateParams } from './mappers'
+import { mapParams, AggregateParam, copyFeildsToConstructore, seperateParams } from '../../../core/parser/mappers'
 import { logCode, log } from '../../testutils'
 
 describe('test mappers', () => {

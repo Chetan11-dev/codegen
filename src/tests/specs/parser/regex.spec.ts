@@ -1,5 +1,5 @@
 // takes make   func  r !r  n !n => func  , r !r  n !n
-import { matchParam, matchMeth, argsCapture, matchDeclaration } from './matchDeclaration'
+import { matchParam, matchMeth, argsCapture, matchDeclaration } from '../../../core/parser/regex'
 
 describe('should test interactions', () => {
     it('should match class or func idetifier', () => {
@@ -20,8 +20,8 @@ describe('should test interactions', () => {
     it('should capture args properly', () => {
         expect(argsCapture(`i s ff  , f  , d`)).not.toBeNull()
         expect(argsCapture(`i s`)).not.toBeNull()
-        expect(argsCapture(`param s`)).toBeNull()
-        expect(argsCapture(`meths A`)).toBeNull()
+        expect(argsCapture(`param s`)).not.toBeNull()
+        expect(argsCapture(`meths A`)).not.toBeNull()
     })
 
 })

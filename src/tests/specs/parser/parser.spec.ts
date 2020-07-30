@@ -1,4 +1,4 @@
-import { parse, findNextClassFeild } from './parser'
+import { parse, findNextClassFeild } from '../../../core/parser/parser'
 import { splitEOL } from "./splitEOL"
 import { multiplespacesToSingle as multiplespacesToSingleTrim } from '../../../utils/utils'
 import { isEmpty } from '../../../utils/tsUtils'

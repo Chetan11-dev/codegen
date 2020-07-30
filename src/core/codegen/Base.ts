@@ -48,7 +48,6 @@ export class Class implements Spec {
 
     constructor(
         public ci: ClassInfo,
-
         public classdependentmethods: f[] = [],
         public methods: Method[] = [],
 
@@ -133,8 +132,9 @@ export class Parameter implements Spec {
     }
 
     constructor(
-        public pi: ParameterInfo, public po: ParameterOptions = {}, public modifier: 'final' | 'var' | 'const' = 'final'
+        public pi: ParameterInfo, public po: ParameterOptions = {}, public modifier: 'final' | '' = 'final'
     ) { }
+
     accept<T>(visitor: SpecVisitor<T>, emitter: T): T {
         return visitor.visitField(this, emitter)
     }

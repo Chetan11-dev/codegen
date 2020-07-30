@@ -1,46 +1,68 @@
-// takes make   func  r !r  n !n => func  , r !r  n !n
+import { parse, findNextClassFeild } from './parser'
+import { splitEOL } from "./splitEOL"
+import { multiplespacesToSingle as multiplespacesToSingleTrim } from '../../../utils/utils'
+import { isEmpty } from '../../../utils/tsUtils'
 
-//  Gives exact matching regex
 
-export function exactMatchRegex(s: string) {
-    return new RegExp(`^\\b${s}\\b$`)
+export interface Line {
+    num: number,
+    text: string
 }
 
-// make   func  r !r  n !n => func  , r !r  n !n
-const matchDeclaration = regex(/^make\s+(\bcl\b|\bfunc\b)(.*)/)
-// param => param
-const matchParam = regex(exactMatchRegex('params'))
-// func => func
-const matchMeth = regex(exactMatchRegex('meth'))
-// i s ff => i,s ,ff
-const argsCapture = regex(/^(s|d|i|d)\s+(\w+)(.*)?/)
-
-
-function regex(r: RegExp) {
-    return (s: string) => (r.exec(s))
+function cleanInput(text: string): Line[] {
+    var t = splitEOL(text).map((s, i) => {
+        return ({ num: i + 1, text: multiplespacesToSingleTrim(s) })
+    })
+    // console.log(t)
+    t = t.filter(a => {
+        return !isEmpty(a.text)
+    })
+    // console.log(a)
+    return t
 }
 
-describe('should test interactions', () => {
-    it('should match class or func idetifier', () => {
-        expect(matchDeclaration(`make   func  r !r  n !n`)).not.toBeNull()
-        expect(matchDeclaration(`make func`)).not.toBeNull()
-        expect(matchDeclaration(`makefunc`)).toBeNull()
-        expect(matchDeclaration(`make funcs`)).toBeNull()
-    })
+describe('parse cases', () => {
 
-    it('should match Param and feild', () => {
-        expect(matchParam(`params`)).not.toBeNull()
-        expect(matchMeth(`meth`)).not.toBeNull()
-        expect(matchParam(`param`)).toBeNull()
-        expect(matchMeth(`meth A`)).toBeNull()
-    })
+    test('should parse', () => {
 
 
-    it('should capture args properly', () => {
-        expect(argsCapture(`i s ff  , f  , d`)).not.toBeNull()
-        expect(argsCapture(`i s`)).not.toBeNull()
-        expect(argsCapture(`param s`)).toBeNull()
-        expect(argsCapture(`meth A`)).toBeNull()
+        const text = `make cl Apple stf
+                      meths 
+                      i getApple [ i an -r i ,i an -r i ]
+                      i getMango 
+                      params 
+                      d getPineApples 
+                      i getPineApple [f , !f , r , !n]
+
+        `
+        const i = cleanInput(text)
+        // console.log(i)
+        parse(i)
+
+
     })
+
+
+
+    // test('should not parse', () => {
+
+
+    //     const text = `
+    // make cl 
+    // meth 
+    // `;
+    //     // console.log(findNextClassFeild('meths'))
+    //     const i = cleanInput(text);
+    //     // console.log(i)
+    //     // parse(i)
+
+
+    // });
+    // test('should text classfeild', () => {
+    //     expect(findNextClassFeild('meths')).toBeDefined()
+    //     expect(findNextClassFeild('meth  s')).not.toBeDefined()
+    //     expect(findNextClassFeild('params')).toBeDefined()
+
+    // })
 
 })

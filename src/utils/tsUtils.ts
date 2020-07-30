@@ -1,8 +1,10 @@
+// Testify 
 export function isEmpty(param: any) {
     if (param == null || !param) {
         return true
     } else return false
 }
+
 export function notArraysEqual(a: any[], b: any[]) {
     return !arraysEqual(a, b)
 }

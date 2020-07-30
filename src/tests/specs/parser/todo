@@ -1,0 +1,31 @@
+Parser accepts some input
+iterates 
+detects state func / cl 
+change to corresponding state 
+if func reads correspongin lines  
+if meth reads correspongin feilds and meth
+In meths parses it and turns to object of method 
+`` feilds
+attaches options at end by checking for undefinity
+returns on object that either contains 
+ detected anything : bool
+ class : Class
+ funcs : Meths[]
+ errors: num[]
+
+```
+string -> ob 
+filter 
+
+```
+in capturing just focus on capture 
+after captured proactively check for state if class in case make a justcaptured func that inverts itself 
+if class 
+    finding feilds
+    finding meths
+
+in class check for 
+    next feild if meth/param 
+    make it justcaptured 
+
+    

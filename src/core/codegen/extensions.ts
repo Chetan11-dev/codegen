@@ -1,6 +1,7 @@
 import { Parameter, Method, Code, Class, Constructor, ClassOptions } from './Base'
 import { Emmiter } from './emmiter'
 import { between } from '../../utils/utils'
+import { removeItemOnce } from '../../utils/tsUtils'
 
 const overrides = "@override"
 function generateToString(
@@ -50,42 +51,44 @@ function createReturnTypeStf(classname: string) {
 // const keyParamForWidget = new Parameter("key", "Key", true, false, false)
 // const keyParamForWidget = new Parameter({name:"key",  type:"Key"} ,)
 
-function generateStatelessWidget(
-    className: string, os: ClassOptions = {}, namedParams: Parameter[] = [], unnamedParams: Parameter[] = [],
+
+function addParamsToParent(cl: Class, params: Parameter) {
+    cl.ci.cons?.pr?.params.push(params)
+}
+
+var buildmeth: Method
+export function generateStatelessWidget_(
+    cl: Class
 ) {
-
-    const meths = optionsToMeth(os)
-
-    const cl = new Class({
-        className, namedParams, unnamedParams, imports: materialImport,
-        pr: "StatelessWidget"
-        , cons: new Constructor({ className, namedParams, unnamedParams }, { name: "StatelessWidget", params: [keyParam] })
-    }, meths, [generateBuildMethod(className)])
-
+    buildmeth = generateBuildMethod(cl.ci.className)
+    cl.methods.unshift(buildmeth)
+    changeParent(cl, "StatelessWidget")
+    addParamsToParent(cl, keyParam)
+    // Add imports 
+    cl.ci.imports = materialImport
     return cl
 }
 
-function generateStatefullWidget(
-    className: string, os: ClassOptions = {}, namedParams: Parameter[] = [], unnamedParams: Parameter[] = [],
+export function generateStatefullWidget_(
+    cl: Class
 ) {
-    const returnclasses = []
-    // Create StateWidget
-    const cl = generateStatelessWidget(className, os, namedParams, unnamedParams)
+    generateStatelessWidget_(cl)
+    const a = cl.methods.find(f => {
+        return buildmeth === f
+    })
+
+    removeItemOnce(cl.methods, a)
     changeParent(cl, "StatefulWidget")
-
-    // remove only build method
-    cl.methods = []
-    cl.classdependentmethods.push(generateCreateState)
-    returnclasses.push(cl)
-
+    cl.classdependentmethods.unshift(generateCreateState)
     // Create State
-    const cl1 = new Class({
+    const className = cl.ci.className
+    const state = new Class({
         className:
             createReturnTypeStf(className), namedParams: [], unnamedParams: [],
         pr: `State<${className}>`
     }, [], [generateBuildMethod(className)])
-    returnclasses.push(cl1)
-    return returnclasses
+
+    return { state: state, widget: cl }
 }
 
 // function clearClassDependentMethods(cl: Class) {
@@ -93,10 +96,10 @@ function generateStatefullWidget(
 // }
 function changeParent(cl: Class, s: string) {
     cl.ci.pr = s
-    cl.ci.cons!.pr!.name = s
+    cl.ci.cons!.pr = { name: s, params: cl.ci.cons!.pr ? cl.ci.cons!.pr.params : [] }
 }
 
-function optionsToMeth(os: ClassOptions,) {
+export function optionsToMeth(os: ClassOptions,) {
     const meths = []
     if (os.generateEquals) {
         meths.push(generateEquals)
@@ -126,4 +129,4 @@ function generateEquals(
     // return m
 }
 
-export { materialImport, keyParam, generateEquals, generateToString, generateBuildMethod, generateStatelessWidget, generateStatefullWidget }
+export { materialImport, keyParam, generateEquals, generateToString, generateBuildMethod, }

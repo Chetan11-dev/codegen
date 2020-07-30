@@ -1,6 +1,7 @@
 import { Spec } from '../core/codegen/Base'
 import { CodeGenerator } from "../core/codegen/CodeGenerator"
 import { Emmiter } from '../core/codegen/emmiter'
+
 export function equalsDart(p: Spec, content: string, log = false) {
 
 
@@ -31,7 +32,7 @@ export function logCode(p: Spec, shouldLogUniCode = true) {
     }
 }
 
-function log(params: string) {
+export function log(params: any) {
     console.log("---------------------\n" + params + "\n---------------------")
     // console.log(params)
     // console.log("---------------------")

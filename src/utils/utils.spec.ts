@@ -1,4 +1,4 @@
-import { between, splitByBlanks } from './utils'
+import { between, split } from './utils'
 import { isEmpty } from './tsUtils'
 
 test('inbetween test ', () => {
@@ -7,8 +7,8 @@ test('inbetween test ', () => {
 
 
 test('splitBySpaces test ', () => {
-    expect(splitByBlanks("  ss \n \n  s   s  ss s ")).toStrictEqual(["ss", "s", "s", "ss", "s"])
-    expect(splitByBlanks("  \n\t ")).toStrictEqual([])
+    expect(split("  ss \n \n  s   s  ss s ")).toStrictEqual(["ss", "s", "s", "ss", "s"])
+    expect(split("  \n\t ")).toStrictEqual([])
 })
 
 

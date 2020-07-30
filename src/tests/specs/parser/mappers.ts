@@ -1,7 +1,8 @@
-import { Class, ParameterOptions, ParameterInfo, Parameter, ClassOptions } from '../../../core/codegen/Base'
+import { Class, ParameterOptions, ParameterInfo, Parameter, ClassOptions, Method } from '../../../core/codegen/Base'
 
 export const defaultClassOptions = (['!r', 'n', '!f'].concat(['str', 'eq']))
 
+export const defaultMethOptions = (['!r', 'n', '!f'])
 // export function addDefaultOptions(params: string[]) {
 //     return defaultClassOptions.concat(params)
 // }
@@ -22,6 +23,33 @@ export interface DefaultOptionFromMeths {
 export interface AggregateParam {
     param: Parameter
     named: boolean
+}
+
+
+export function isAnyRequiredClass(cl: Class) {
+
+    const { ci: { namedParams, unnamedParams, cons, imports, pr, className }, classdependentmethods, methods, } = cl
+    if (doesanyhasRequired(namedParams) || doesanyhasRequired(unnamedParams) || isAnyRequiredMeths(methods)) {
+        return true
+    }
+
+    return false
+}
+
+
+export function doesanyhasRequired(params: Parameter[]) {
+    return params.some(p => p.po.required ? true : false)
+}
+
+export function isAnyRequiredMeths(methods: Method[]) {
+    var any = false
+
+    methods.forEach(m => {
+        if (doesanyhasRequired(m.pi.namedParams) || doesanyhasRequired(m.pi.unnamedParams)) {
+            any = true
+        }
+    })
+    return any
 }
 
 // po = r !r f !f n !n 
@@ -64,10 +92,10 @@ function mapClass() {
 }
 
 function determineDefaultOptionsForMethsParams(po: string[],
-    classOptions: DefaultOptionFromMeths): DefaultOptionFromMeths {
+    options: DefaultOptionFromMeths): DefaultOptionFromMeths {
 
-    var required = classOptions.required
-    var named = classOptions.named
+    var required = options.required
+    var named = options.named
 
     po.forEach(o => {
         switch (o) {

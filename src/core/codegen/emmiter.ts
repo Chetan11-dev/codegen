@@ -29,6 +29,11 @@ export class Emmiter {
     }
 
 
+    static concat(s: string, s1: string) {
+        return s + NL + s1
+    }
+
+
     emitLine() {
         this.add(line())
     }

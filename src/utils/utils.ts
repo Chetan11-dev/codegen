@@ -1,3 +1,5 @@
+import { splitEOL } from '../tests/specs/parser/splitEOL'
+import { EOL } from "os"
 export function between(ls: string[], between = ", ") {
     // same as ls.length == 0
     if (ls.length === 0) {
@@ -20,10 +22,10 @@ export function apply<A, R>(a: A | undefined | null, f: (a: A) => R, u?: () => R
 }
 
 // Ignores empty
-export function splitByBlanks(text: string) {
+export function split(text: string, byWhat = ' ') {
     // replace more than  2  spaces with 1 
     text = multiplespacesToSingle(text)
-    return removeEmpty(text.split(" "))
+    return removeEmpty(text.split(byWhat).map(p => p.trim()))
 }
 
 export function multiplespacesToSingle(text: string): string {
@@ -53,4 +55,4 @@ export function braces(content = "", start = "{", end = "}") {
     return start + content + end
 }
 
-export const NL = '\n'
+export const NL = EOL

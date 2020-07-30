@@ -1,5 +1,6 @@
 import { between, braces } from '../../utils/utils'
 import { isNotEmptyString } from '../../utils/tsUtils'
+import { EOL } from '../../tests/specs/parser/splitEOL'
 // import { Parameter } from './Base'
 
 export interface Spec {
@@ -28,12 +29,20 @@ export interface SpecVisitor<E> {
 
 }
 
+export function printCode(params: String) {
+    return new Code([`print('${params}')`])
+}
+
 export class Code {
 
-    constructor(private codes: string[] = []) { }
+    constructor(public codes: string[] = []) { }
 
     public get code(): string {
-        return between(this.codes.map(c => c + ";\n"), "")
+        return between(this.codes.map(c => {
+            c = c.trim()
+            var lastChar = c.substr(c.length - 1) === ';'
+            return c + (lastChar ? '' : ";") + EOL
+        }), "")
     }
 }
 

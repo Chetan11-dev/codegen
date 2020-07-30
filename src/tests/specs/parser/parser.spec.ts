@@ -24,21 +24,29 @@ function cleanInput(text: string): Line[] {
 describe('parse cases', () => {
 
     test('should parse', () => {
-
-
-        const text = `make cl Apple stf
+        const text = `make cl Apple 
                       meths 
-                      i getApple [ i an -r i ,i an -r i ]
+                      i getApples
                       i getMango 
                       params 
                       d getPineApples 
-                      i getPineApple [f , !f , r , !n]
-
+                      i getPineApple [f  n  !n !f f r]
         `
-        const i = cleanInput(text)
-        // console.log(i)
-        parse(i)
 
+        const i = cleanInput(text)
+        // console.log(parse(i))
+
+    })
+
+
+    test('should parse func', () => {
+        const text = `make func
+                      d getPineApples 
+                      i getPineApple [f  n  !n !f f r]
+        `
+
+        const i = cleanInput(text)
+        console.log(parse(i))
 
     })
 

@@ -2,14 +2,15 @@
 /* eslint-disable no-throw-literal */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Line } from './parser.spec'
-import { matchParam, matchMeth, argsCapture, matchClassDeclarations, matchFuncDeclarations, matchDeclaration } from './matchDeclaration'
-import { Class, ParameterInfo, Constructor } from '../../../core/codegen/Base'
+import { matchParam, matchMeth, argsCapture, matchClassDeclarations, matchFuncDeclarations, matchDeclaration, mathMethParamField } from './matchDeclaration'
+import { Class, ParameterInfo, Constructor, Method, Code, printCode } from '../../../core/codegen/Base'
 import { impossible } from './impossible'
-import { determineDefaultOptions, defaultClassOptions, DefaultOptionFromMeths, mapParams, mapParamsForMeth, seperateParams, generateClassOptions, copyFeildsToConstructore, generateStateOptions } from './mappers'
-import { splitByBlanks } from '../../../utils/utils'
+import { determineDefaultOptions, defaultClassOptions, DefaultOptionFromMeths, mapParams, mapParamsForMeth, seperateParams, generateClassOptions, copyFeildsToConstructore, generateStateOptions, defaultMethOptions, isAnyRequiredClass, isAnyRequiredMeths } from './mappers'
+import { split } from '../../../utils/utils'
 import { optionsToMeth, generateStatelessWidget_, generateStatefullWidget_ } from '../../../core/codegen/extensions'
-import { logCode } from '../../testutils'
+import { logCode, specsToStr } from '../../testutils'
 import { dartTypeOf } from './objectsmappers'
+import { Emmiter } from '../../../core/codegen/emmiter'
 interface ReturnType {
     stateFull?: {
         state: Class
@@ -19,7 +20,8 @@ interface ReturnType {
 }
 
 
-function toClass(p: RegExpExecArray, meths: RegExpExecArray[], params: RegExpExecArray[]): ReturnType {
+const importMeta = "import 'package:meta/meta.dart';"
+function toClass(p: RegExpExecArray, meths: RegExpExecArray[], params: RegExpExecArray[]) {
 
     const className = p[2]
     // console.log(p)
@@ -29,18 +31,11 @@ function toClass(p: RegExpExecArray, meths: RegExpExecArray[], params: RegExpExe
     // console.log({className, optionalargs})
     var arr: string[] = []
 
-    arr = arr.concat(defaultClassOptions).concat(splitByBlanks(optionalargs))
+    arr = arr.concat(defaultClassOptions).concat(split(optionalargs))
 
     const parameterOptions = determineDefaultOptions(arr,)
     const methParmOptions: DefaultOptionFromMeths = parameterOptions
 
-    function parmHelper<A>(p: RegExpExecArray, ff: (type: ParameterInfo, options: string[]) => A) {
-
-        const type = dartTypeOf(p[1])
-        const name = p[2]
-        const options = splitByBlanks(p[5] ? p[5] : '')
-        return ff({ type, name }, options)
-    }
 
     const aggs = params.map(p => {
         return parmHelper(p, (pi, options) => mapParams(pi, options, parameterOptions))
@@ -53,40 +48,79 @@ function toClass(p: RegExpExecArray, meths: RegExpExecArray[], params: RegExpExe
         className, namedParams: ps.namedParams, unnamedParams: ps.unnamedParams
         , cons: new Constructor({ className, namedParams: cs.namedParams, unnamedParams: cs.unnamedParams, })
     },
-        optionsToMeth(generateClassOptions(arr)))
+        optionsToMeth(generateClassOptions(arr)), makeFunctionsFromArray(meths))
+
     const stateOptions = generateStateOptions(arr)
+
+    meths.forEach(m => toFuncs(m))
+
     if (stateOptions.stf) {
-        return { stateFull: generateStatefullWidget_(cl) }
+        const st = generateStatefullWidget_(cl)
+        return [st.widget, st.state]
     }
     else if (stateOptions.stl) {
-        // console.log(cl)
-        generateStatelessWidget_(cl)
+        return [generateStatelessWidget_(cl)]
     }
 
-    return { class: cl }
+    if (isAnyRequiredClass(cl)) {
+        addImport(cl, importMeta)
+    }
 
-    /** make meths */
-    // const ms = meths.map(m => {
-    //     return parmHelper(m, (pi, options) => {
-    //         return mapParamsForMeth(pi, options, methParmOptions)
-    //     })
-    // })
-
-    // const c = new Class({ className, namedParams: [], unnamedParams: [], },)
-    // return c 
+    return [cl]
 }
 
 
-function decToFuncs(p: RegExpExecArray) {
-    const text = p[0], className = p[1]
-    const optionalargs = p[2] as undefined | string
-
-
-    if (optionalargs) {
-
-    } else {
-        const c = new Class({ className, namedParams: [], unnamedParams: [], },)
+function addImport(cl: Class, im: string) {
+    if (cl.ci.imports) {
+        cl.ci.imports.codes.unshift(im)
     }
+    else {
+        cl.ci.imports = new Code([im])
+    }
+}
+
+function parmHelper<A>(p: RegExpExecArray, ff: (type: ParameterInfo, options: string[]) => A,) {
+
+    const type = dartTypeOf(p[1])
+    const name = p[2]
+    const options = split(p[5] ? p[5] : '')
+
+    return ff({ type, name }, options)
+}
+
+function makeFunctionsFromArray(ls: RegExpExecArray[]) {
+    return ls.map(toFuncs)
+}
+
+
+function toFuncs(p: RegExpExecArray) {
+    const methOptions = (determineDefaultOptions(defaultMethOptions))
+
+    const returnType = dartTypeOf(p[1])
+    const name = p[2]
+
+    const allparams = split(p[5] ? p[5] : '', ',')
+        // filter out invalid ones
+        .filter(s => {
+            const res = mathMethParamField(s)
+            return (res ? true : false)
+        })
+        .map(s => {
+            const res = mathMethParamField(s) as RegExpExecArray
+            const type = dartTypeOf(res[1])
+            const name = res[2]
+            const options = split(res[5] ? res[5] : '')
+            return {
+                type,
+                name
+                , options
+            }
+        }).map(pi => mapParamsForMeth(pi, pi.options, methOptions))
+
+
+    const { namedParams, unnamedParams } = seperateParams(allparams)
+    const m = new Method({ code: printCode(`Hello from ${name}`), name, returnType, }, { namedParams, unnamedParams, })
+    return m
 }
 
 enum ParseState {
@@ -224,38 +258,25 @@ export function parse(ls: Line[]) {
     }
 
     // console.log({ declaration: declaration!, meths, params, funcs, state, toCreatState, err })
-
+    var returnStr = ''
     switch (toCreatState) {
         // we will have declarations use it 
         case ParseState.Class:
             //  get hold of declartions parse it log it
-            const clazz = toClass(declaration!, meths, params)
-            if (clazz.class) {
-                logCode(clazz.class, false)
-            } else if (clazz.stateFull) {
-
-                logCode(clazz.stateFull.widget, false)
-
-                logCode(clazz.stateFull.state, false)
-            }
-            // make coreesoponding class 
-            // make params 
-            // unnamed and named
-            // make meths 
-            // apply defaults if anything is undefined
-            // make it 
-
+            const classes = toClass(declaration!, meths, params)
+            returnStr = specsToStr(classes)
             break
         case ParseState.Func:
-            // const classDeclaration = matchDeclaration(declaration!.text)
-            // const clazz = toClass(classDeclaration!)
+            const fs = makeFunctionsFromArray(funcs)
+            // console.log(isAnyRequiredMeths(fs))
+            returnStr = specsToStr(fs, isAnyRequiredMeths(fs) ? importMeta : '')
             break
         case undefined:
             impossible()
             break
     }
 
-
+    return returnStr
 }
 
 function determineClassState(f: string, classState: ClassState) {

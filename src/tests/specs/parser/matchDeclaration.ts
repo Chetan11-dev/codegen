@@ -6,7 +6,6 @@ export function matchDeclaration(p: string,) {
     return null
 }
 
-
 // https://regex101.com/r/6cv0mM/1
 export const matchClassDeclarations = regex(/^make\s+(\bcl\b)\s+(\w+)(.*)?/)
 
@@ -29,6 +28,11 @@ export const matchMeth = regex(exactMatchRegex('meths'))
 // GROUP 5 ?= ff,f  
 // i s [ff,f ] => i,s ,ff
 export const argsCapture = regex(/^(\w+)\s+(\w+)(\s+)?(\[(.*)\])?/)
+
+// same as arsCapture but dont require [ ]
+// https://regex101.com/r/AMdHOL/1
+export const mathMethParamField = regex(/^(\w+)\s+(\w+)(\s+)?((.*))?/)
+
 export function regex(r: RegExp) {
     return (s: string) => (r.exec(s))
 }

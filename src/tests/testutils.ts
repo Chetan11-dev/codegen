@@ -1,6 +1,8 @@
 import { Spec } from '../core/codegen/Base'
 import { CodeGenerator } from "../core/codegen/CodeGenerator"
 import { Emmiter } from '../core/codegen/emmiter'
+import { between } from '../utils/utils'
+import { splitEOL, EOL } from './specs/parser/splitEOL'
 
 export function equalsDart(p: Spec, content: string, log = false) {
 
@@ -26,10 +28,24 @@ export function codeGenCheck(p: (c: CodeGenerator) => void,) {
 
 export function logCode(p: Spec, shouldLogUniCode = true) {
     if (shouldLogUniCode) {
-        logString(dartCode(p)[0] as string)
+        logString(specToStr(p))
     } else {
-        log(dartCode(p)[0] as string)
+        log(specToStr(p))
     }
+}
+
+function specToStr(p: Spec): string {
+    return dartCode(p)[0] as string
+}
+
+export function specsToStr(ls: Spec[], atTop: string = ''): string {
+    const lss = ls.map(specToStr)
+    if (atTop) {
+        lss.unshift('')
+        lss.unshift(atTop)
+
+    }
+    return between(lss, EOL)
 }
 
 export function log(params: any) {

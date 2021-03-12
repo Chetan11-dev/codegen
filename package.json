@@ -48,6 +48,6 @@
     ]
   },
   "devDependencies": {
-    "madge": "^3.9.2"
+    "madge": "^4.0.1"
   }
 }
